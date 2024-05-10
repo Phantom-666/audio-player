@@ -4,11 +4,25 @@ import "./index.css"
 import App from "./App"
 import reportWebVitals from "./reportWebVitals"
 import "font-awesome/css/font-awesome.min.css"
+import { Provider } from "react-redux"
+import { setupStore } from "./store"
+import "@radix-ui/themes/styles.css"
+import { Theme } from "@radix-ui/themes"
+
+// TODO: load your music
+// TODO: next song
+// TODO: remove playlist
+
+const store = setupStore()
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement)
 root.render(
   <React.StrictMode>
-    <App />
+    <Provider store={store}>
+      <Theme>
+        <App />
+      </Theme>
+    </Provider>
   </React.StrictMode>
 )
 

@@ -1,98 +1,60 @@
-import { useRef, useState } from "react"
+import { useEffect, useRef } from "react"
 import "./App.css"
 import Player from "./components/Player"
-import { BrowserRouter as Router } from "react-router-dom"
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom"
 import RoutesNav from "./components/RoutesNav/RoutesNav"
-
-// TODO: add redux
+import { useAppDispatch, useAppSelector } from "./hooks/redux"
+import Login from "./components/Login"
+import Register from "./components/Register"
+import { userSlice } from "./store/reducers/UserSlice"
 
 function App() {
-  const [isPlaying, setIsPlaying] = useState(false)
-  const [duration, setDuration] = useState(0)
-  const [currentTime, setCurrentTime] = useState(0)
-
   const audioRef = useRef<HTMLAudioElement>(null)
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
+  // const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const file = e.target.files?.[0]
 
-    if (file) {
-      const url = URL.createObjectURL(file)
+  //   if (file) {
+  //     const url = URL.createObjectURL(file)
 
-      audioRef.current!.src = url
-      audioRef.current!.onloadedmetadata = () => {
-        setDuration(audioRef.current!.duration)
-      }
+  //     audioRef.current!.src = url
+  //     audioRef.current!.onloadedmetadata = () => {
+  //       setDuration(audioRef.current!.duration)
+  //     }
+  //   }
+  // }
+
+  const { isAuth } = useAppSelector((state) => state.userReducer)
+  const dispatch = useAppDispatch()
+
+  const { loginAuth, setUsername } = userSlice.actions
+
+  useEffect(() => {
+    const username = localStorage.getItem("username")
+
+    if (username) {
+      dispatch(setUsername(username))
+      dispatch(loginAuth())
     }
-  }
-
-  const togglePlay = () => {
-    if (isPlaying) {
-      audioRef.current!.pause()
-    } else {
-      audioRef.current!.play()
-    }
-
-    setIsPlaying(!isPlaying)
-  }
-
-  const formatTime = (time: number) => {
-    const min = Math.floor(time / 60)
-    const sec = Math.floor(time % 60)
-
-    return `${min}:${sec.toString().padStart(2, "0")}`
-  }
-
-  const updateTime = () => {
-    setCurrentTime(audioRef.current!.currentTime)
-  }
-
-  const loadMusic = () => {
-    const url = `http://localhost:3001/music/test1.mp3`
-
-    audioRef.current!.src = url
-    audioRef.current!.onloadedmetadata = () => {
-      setDuration(audioRef.current!.duration)
-    }
-  }
-  const handleAudioEnded = () => {
-    setIsPlaying(false)
-  }
-  //
+  }, [])
 
   return (
     <Router>
-      <div className="bg-[#121212] w-full min-h-screen font-roboto p-4">
-        <RoutesNav />
-        <Player />
-      </div>
+      {isAuth ? (
+        <div className="bg-[#121212] w-full min-h-screen font-roboto p-4">
+          <RoutesNav audioRef={audioRef} />
+          <Player audioRef={audioRef} />
+        </div>
+      ) : (
+        <div className="bg-[#121212] w-full min-h-screen font-roboto p-4 text-white">
+          <Routes>
+            <Route path="/" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+          </Routes>
+        </div>
+      )}
     </Router>
   )
-
-  // return (
-  //   <div className="App">
-  //     <button onClick={loadMusic}>Load music</button>
-  //     <input type="file" accept="audio/*" onChange={handleFileChange} />
-  //     <audio
-  //       ref={audioRef}
-  //       onTimeUpdate={updateTime}
-  //       onEnded={handleAudioEnded}
-  //     />
-  //     <div className="controls">
-  //       <button onClick={togglePlay}>{isPlaying ? "Pause" : "Play"}</button>
-  //       <span>{formatTime(currentTime)}</span>
-  //       <input
-  //         type="range"
-  //         value={currentTime}
-  //         max={duration}
-  //         onChange={(e) => {
-  //           audioRef.current!.currentTime = Number(e.target.value)
-  //         }}
-  //       />
-  //       <span>{formatTime(duration)}</span>
-  //     </div>
-  //   </div>
-  // )
 }
 
 export default App
