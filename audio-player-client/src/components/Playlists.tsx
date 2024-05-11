@@ -38,6 +38,14 @@ export default function Playlists() {
 
   const p = userAPI.useGetPlaylistsQuery(username)
 
+  const [deletePlaylistFetch] = userAPI.useDeletePlaylistMutation()
+
+  const deletePlaylist = async (playlistId: number) => {
+    const res = await deletePlaylistFetch({ username, playlistId })
+
+    console.log("res", res)
+  }
+
   return (
     <>
       <header className="flex justify-between items-center mb-6">
@@ -76,6 +84,44 @@ export default function Playlists() {
       </section>
       <h1 className="text-white text-xl mt-2">Playlists</h1>
       <section className="grid grid-cols-1 gap-4 mt-2">
+        {p.data?.playlists.map(
+          (album: { id: number; name: string }, i: number) => (
+            <div
+              key={i}
+              className="bg-[#181818] p-2 flex items-center rounded-lg justify-between cursor-pointer"
+              onClick={() => nav(`/playlist/${album.id}`)}
+            >
+              <div className="flex items-center">
+                <img
+                  src={
+                    album.name === "Liked"
+                      ? "http://localhost:3001/music/images/liked_playlist.png"
+                      : "http://localhost:3001/music/images/test-image-1.jpg"
+                  }
+                  alt={album.name}
+                  className="h-[50px] w-[50px] object-cover rounded-lg"
+                />
+                <div className="ml-3">
+                  <h3 className="text-white text-md">{album.name}</h3>
+                </div>
+              </div>
+              {album.name !== "Liked" && (
+                <i
+                  onClick={async (e) => {
+                    e.stopPropagation()
+
+                    await deletePlaylist(album.id)
+                  }}
+                  className={
+                    "fa fa-times mr-2 text-white text-xl cursor-pointer hover:text-gray-600"
+                  }
+                ></i>
+              )}
+            </div>
+          )
+        )}
+      </section>
+      {/* <section className="grid grid-cols-1 gap-4 mt-2">
         {p.data?.playlists.map((album: { id: number; name: string }) => (
           <div
             key={album.id}
@@ -96,7 +142,7 @@ export default function Playlists() {
             </div>
           </div>
         ))}
-      </section>
+      </section> */}
     </>
   )
 }

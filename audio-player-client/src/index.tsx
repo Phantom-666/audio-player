@@ -9,10 +9,6 @@ import { setupStore } from "./store"
 import "@radix-ui/themes/styles.css"
 import { Theme } from "@radix-ui/themes"
 
-// TODO: load your music
-// TODO: next song
-// TODO: remove playlist
-
 const store = setupStore()
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement)

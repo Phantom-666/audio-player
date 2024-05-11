@@ -13,14 +13,19 @@ export default function Playlist({
   const location = useLocation()
   const playlistId = location.pathname.split("/playlist/")[1]
 
+  const playlistName = userAPI.useGetPlaylistNameQuery(playlistId)
+  const dispatch = useAppDispatch()
+  const { setDuration, setCurrentSong, setCurrentSongs } = playerSlice.actions
+
   const { data } = userAPI.useFetchSongsQuery({
     username,
     playlist: playlistId,
   })
 
-  const playlistName = userAPI.useGetPlaylistNameQuery(playlistId)
-  const dispatch = useAppDispatch()
-  const { setDuration, setCurrentSong } = playerSlice.actions
+  if (data) {
+    if (data.songs)
+      if (data.songs.length !== 0) dispatch(setCurrentSongs(data.songs))
+  }
 
   const loadMusic = (songName: string) => {
     const url = `http://localhost:3001/music/all_music/${songName}`

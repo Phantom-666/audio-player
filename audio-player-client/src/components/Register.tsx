@@ -6,7 +6,7 @@ import { userAPI } from "../services/UserService"
 export default function Register() {
   const [userInput, setUserInput] = useState("")
 
-  const [createUser, { error }] = userAPI.useCreateUserMutation()
+  const [createUser] = userAPI.useCreateUserMutation()
 
   const nav = useNavigate()
   const register = async () => {

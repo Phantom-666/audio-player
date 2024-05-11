@@ -119,6 +119,14 @@ const deleteFromPlaylist = async (req: Request, res: Response) => {
   res.status(200).json({ status: "Success", song })
 }
 
+const deletePlaylist = async (req: Request, res: Response) => {
+  const { playlistId, username } = req.body
+
+  await db.deletePlaylist(username, Number(playlistId))
+
+  res.status(200).json({ status: "Success" })
+}
+
 export default {
   createUser,
   getUser,
@@ -131,4 +139,5 @@ export default {
   addToPlaylist,
   getPlaylistName,
   deleteFromPlaylist,
+  deletePlaylist,
 }

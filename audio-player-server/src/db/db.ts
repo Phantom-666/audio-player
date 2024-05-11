@@ -206,41 +206,26 @@ class PrismaDb {
     }
 
     return music
-
-    // const result = []
-
-    // for (let k = 0; k < playlist.length; ++k) {
-    //   let ready = false
-
-    //   const isInPlaylists: string[] = []
-
-    //   for (let i = 0; i < playlists.length; ++i) {
-    //     const songs = await this.prisma.music.findMany({
-    //       where: { playlistId: playlists[i].id,  },
-    //     })
-
-    //     for (let j = 0; j < songs.length; ++j) {
-    //       const song = songs[j].title
-
-    //       if (song === playlist[k]) {
-    //         ready = true
-    //         break
-    //       }
-    //     }
-
-    //     if (ready) break
-    //   }
-
-    //   result.push({ title: playlist[k], isLiked: ready, isInPlaylists })
-    // }
-
-    return result
   }
 
   async getPlaylistName(playlist_id: number) {
     return (
       await this.prisma.playlist.findFirst({ where: { id: playlist_id } })
     )?.name
+  }
+
+  async deletePlaylist(username: string, playlistId: number) {
+    const user = await this.getUser(username)
+
+    if (!user) throw new Error("User not found")
+
+    const songs = await this.prisma.music.deleteMany({
+      where: { playlistId: playlistId },
+    })
+
+    const playlist = await this.prisma.playlist.delete({
+      where: { userId: user.id, id: playlistId },
+    })
   }
 }
 

@@ -11,19 +11,6 @@ import { userSlice } from "./store/reducers/UserSlice"
 function App() {
   const audioRef = useRef<HTMLAudioElement>(null)
 
-  // const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   const file = e.target.files?.[0]
-
-  //   if (file) {
-  //     const url = URL.createObjectURL(file)
-
-  //     audioRef.current!.src = url
-  //     audioRef.current!.onloadedmetadata = () => {
-  //       setDuration(audioRef.current!.duration)
-  //     }
-  //   }
-  // }
-
   const { isAuth } = useAppSelector((state) => state.userReducer)
   const dispatch = useAppDispatch()
 

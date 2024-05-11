@@ -11,8 +11,14 @@ export default function Player({
 
   const dispatch = useAppDispatch()
 
-  const { togglePlaying, setCurrentTime, setIsPlaying, setVolume } =
-    playerSlice.actions
+  const {
+    togglePlaying,
+    setCurrentTime,
+    setIsPlaying,
+    setVolume,
+    setCurrentSong,
+    setDuration,
+  } = playerSlice.actions
 
   const togglePlay = () => {
     if (!currentSong) return
@@ -29,15 +35,68 @@ export default function Player({
   const updateTime = () => {
     dispatch(setCurrentTime(audioRef.current!.currentTime))
   }
-  const handleAudioEnded = () => {
-    dispatch(setIsPlaying(false))
-  }
 
   const formatTime = (time: number) => {
     const min = Math.floor(time / 60)
     const sec = Math.floor(time % 60)
 
     return `${min}:${sec.toString().padStart(2, "0")}`
+  }
+
+  const { currentSongs } = useAppSelector((state) => state.playerReducer)
+
+  const loadMusic = (songName: string) => {
+    const url = `http://localhost:3001/music/all_music/${songName}`
+
+    if (!audioRef) {
+      return console.log("no audio ref")
+    }
+    dispatch(setCurrentSong(songName))
+    audioRef.current!.src = url
+    audioRef.current!.onloadedmetadata = () => {
+      dispatch(setDuration(audioRef.current!.duration))
+    }
+  }
+
+  const loadNextSong = (songs: { title: string }[]) => {
+    let index = 0
+
+    for (let i = 0; i < songs.length; i++) {
+      if (songs[i].title === currentSong) {
+        index = i
+        break
+      }
+    }
+
+    if (songs.length === index + 1) {
+      //end of playlist
+
+      loadMusic(songs[0].title)
+      audioRef.current!.play()
+    } else {
+      loadMusic(songs[index + 1].title)
+      audioRef.current!.play()
+    }
+
+    dispatch(setIsPlaying(true))
+  }
+
+  const handleAudioEnded = (songs: { title: string }[]) => {
+    let index = 0
+
+    for (let i = 0; i < songs.length; i++) {
+      if (songs[i].title === currentSong) {
+        index = i
+        break
+      }
+    }
+
+    if (songs.length === index + 1) {
+      dispatch(setIsPlaying(false))
+    } else {
+      loadMusic(songs[index + 1].title)
+      audioRef.current!.play()
+    }
   }
 
   return (
@@ -54,7 +113,7 @@ export default function Player({
         <audio
           ref={audioRef}
           onTimeUpdate={updateTime}
-          onEnded={handleAudioEnded}
+          onEnded={() => handleAudioEnded(currentSongs)}
         />
 
         <div>
@@ -66,7 +125,12 @@ export default function Player({
         </div>
       </div>
       <div className="mr-2">
-        <i className="fa fa-forward text-white text-xl"></i>
+        <i
+          className="fa fa-forward text-white text-xl cursor-pointer"
+          onClick={() => {
+            loadNextSong(currentSongs)
+          }}
+        ></i>
       </div>
 
       <input

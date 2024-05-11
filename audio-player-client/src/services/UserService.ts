@@ -112,5 +112,14 @@ export const userAPI = createApi({
       }),
       invalidatesTags: ["Songs"],
     }),
+
+    deletePlaylist: builder.mutation({
+      query: (playlist) => ({
+        url: "/playlist/delete",
+        method: "POST",
+        body: playlist,
+      }),
+      invalidatesTags: ["Playlist"],
+    }),
   }),
 })

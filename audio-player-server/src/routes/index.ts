@@ -16,5 +16,6 @@ router.post("/unlike_song", userContoller.unlikeSong)
 router.get("/playlist/name", userContoller.getPlaylistName)
 router.post("/add_to_playlist", userContoller.addToPlaylist)
 router.post("/delete_from_playlist", userContoller.deleteFromPlaylist)
+router.post("/playlist/delete", userContoller.deletePlaylist)
 
 export default router

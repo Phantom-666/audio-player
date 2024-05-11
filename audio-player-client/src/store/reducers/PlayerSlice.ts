@@ -7,6 +7,7 @@ interface PlayerState {
   duration: number
   volume: number
   currentSong: string | null
+  currentSongs: { title: string }[]
 }
 
 const initialState: PlayerState = {
@@ -16,6 +17,7 @@ const initialState: PlayerState = {
   duration: 0,
   volume: 100,
   currentSong: null,
+  currentSongs: [],
 }
 
 export const playerSlice = createSlice({
@@ -42,6 +44,10 @@ export const playerSlice = createSlice({
     },
     setCurrentSong: (state, action) => {
       state.currentSong = action.payload
+    },
+
+    setCurrentSongs: (state, action) => {
+      state.currentSongs = action.payload
     },
   },
 })

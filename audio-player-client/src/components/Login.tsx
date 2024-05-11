@@ -13,7 +13,7 @@ export default function Login() {
 
   const dispatch = useAppDispatch()
 
-  const [getUser, { error }] = userAPI.useGetUserMutation()
+  const [getUser] = userAPI.useGetUserMutation()
 
   const loginHandle = async () => {
     const user = await getUser({ username: loginInput })
